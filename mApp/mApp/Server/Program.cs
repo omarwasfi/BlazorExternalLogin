@@ -30,7 +30,7 @@ builder.Services.AddAuthentication()
      }).AddFacebook(facebookOptions =>
      {
          facebookOptions.AppId = builder.Configuration["Facebook:AppId"];
-         facebookOptions.AppSecret = builder.Configuration["Facebook:AppSecrete"];
+         facebookOptions.AppSecret = builder.Configuration["Facebook:AppSecret"];
 
          facebookOptions.Events = new OAuthEvents()
          {
