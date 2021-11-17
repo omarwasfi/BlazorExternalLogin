@@ -1,6 +1,7 @@
 using mApp.Server.Data;
 using mApp.Server.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,21 @@ builder.Services.AddAuthentication()
          opt.ClientId = googleAuth["ClientId"];
          opt.ClientSecret = googleAuth["ClientSecret"];
          opt.SignInScheme = IdentityConstants.ExternalScheme;
+     }).AddFacebook(facebookOptions =>
+     {
+         facebookOptions.AppId = builder.Configuration["Facebook:AppId"];
+         facebookOptions.AppSecret = builder.Configuration["Facebook:AppSecrete"];
+
+         facebookOptions.Events = new OAuthEvents()
+         {
+             OnRemoteFailure = loginFailureHandler =>
+             {
+                 var authProperties = facebookOptions.StateDataFormat.Unprotect(loginFailureHandler.Request.Query["state"]);
+                 loginFailureHandler.Response.Redirect("/Identity/Account/Login");
+                 loginFailureHandler.HandleResponse();
+                 return Task.FromResult(0);
+             }
+         };
      })
     .AddIdentityServerJwt();
 
